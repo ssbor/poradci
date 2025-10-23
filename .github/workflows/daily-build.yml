@@ -2,7 +2,7 @@ name: Daily MPSV Data Build
 
 on:
   schedule:
-    - cron: "7 3 * * *"
+    - cron: "7 3 * * *"   # denně v 03:07 UTC
   workflow_dispatch: {}
 
 jobs:
@@ -14,15 +14,19 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Install dependencies
         run: npm ci || npm install
-       - name: Build JSON shards
+
+      - name: Build JSON shards
         run: npm run build
         env:
           MPSV_URL: https://data.mpsv.cz/od/soubory/volna-mista/volna-mista.jsonld
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
