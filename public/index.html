@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Školní Bezpečnost – denní data (MPSV)</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial; margin:20px;}
+    header{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    .pill{padding:8px 12px; border:1px solid #ccc; border-radius:999px; cursor:pointer; user-select:none}
+    .pill.active{background:#111; color:#fff; border-color:#111}
+    .stats{display:flex; gap:24px; margin:16px 0}
+    .card{border:1px solid #e4e4e7; border-radius:12px; padding:16px}
+    table{border-collapse:collapse; width:100%}
+    th,td{border-bottom:1px solid #eee; padding:8px 6px; text-align:left; font-size:14px}
+    th{background:#fafafa}
+    .muted{color:#666}
+  </style>
+</head>
+<body>
+  <h1>Denní data volných míst (MPSV)</h1>
+  <p class="muted">Automaticky generováno GitHub Actions z <code>volna-mista.json.gz</code>. Vyber kategorii.</p>
+
+  <header>
+    <span class="pill active" data-tag="auto">Auto</span>
+    <span class="pill" data-tag="agri">Agri</span>
+    <span class="pill" data-tag="gastro">Gastro</span>
+  </header>
+
+  <section class="stats">
+    <div class="card"><div class="muted">Počet nabídek</div><div id="count" style="font-size:28px;font-weight:700">–</div></div>
+    <div class="card"><div class="muted">Medián mzdy (od)</div><div id="median" style="font-size:28px;font-weight:700">–</div></div>
+  </section>
+
+  <section class="card" style="margin-bottom:16px">
+    <h3 style="margin:0 0 8px">Top zaměstnavatelé (TOP 10)</h3>
+    <ol id="top"></ol>
+  </section>
+
+  <section class="card">
+    <h3 style="margin:0 0 8px">Poslední nabídky (max 200)</h3>
+    <table>
+      <thead><tr><th>Profese</th><th>Zaměstnavatel</th><th>Okres</th><th>Mzda</th><th>Datum</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+<script>
+async function loadData(tag){
+  const res = await fetch(`data/${tag}.json?_=${Date.now()}`);
+  if(!res.ok) throw new Error('Nelze načíst data');
+  return await res.json();
+}
+function render(tag, data){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active', p.dataset.tag===tag));
+  document.getElementById('count').textContent = data.summary?.count ?? '–';
+  document.getElementById('median').textContent = data.summary?.median_wage_low ?? '–';
+
+  const top = document.getElementById('top'); top.innerHTML='';
+  (data.top_employers||[]).forEach(e=>{
+    const li = document.createElement('li');
+    li.textContent = `${e.name} (${e.count})`;
+    top.appendChild(li);
+  });
+
+  const tb = document.getElementById('rows'); tb.innerHTML='';
+  (data.last_offers||[]).forEach(r=>{
+    const mzda = (r.mzda_od??'') + ((r.mzda_do)? '–'+r.mzda_do : '');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.profese||''}</td><td>${r.zamestnavatel||''}</td><td>${r.okres||''}</td><td>${mzda||''}</td><td>${r.datum||''}</td>`;
+    tb.appendChild(tr);
+  });
+}
+let current = 'auto';
+document.querySelectorAll('.pill').forEach(el=>{
+  el.addEventListener('click', async () => {
+    current = el.dataset.tag;
+    const data = await loadData(current);
+    render(current, data);
+  });
+});
+// init
+loadData(current).then(d=>render(current,d)).catch(()=>{
+  document.getElementById('count').textContent = '—';
+});
+</script>
+</body>
+</html>
