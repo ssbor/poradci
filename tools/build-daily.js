@@ -1,14 +1,16 @@
 // tools/build-daily.js
-// Node 20+, ESM. Vyžaduje: "type": "module" v package.json a dep "stream-json".
+// Node 20+, ESM ("type": "module" v package.json)
 import fs from "fs";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
 import zlib from "zlib";
 
-// ⚠️ stream-json je CommonJS → vezmeme default import a z něj destrukturalizujeme:
+// stream-json je CommonJS → default import a až z něj vybereme funkce
 import parserPkg from "stream-json/Parser.js";
+import pickPkg from "stream-json/filters/Pick.js";
 import streamArrayPkg from "stream-json/streamers/StreamArray.js";
 const { parser } = parserPkg;
+const { pick } = pickPkg;
 const { streamArray } = streamArrayPkg;
 
 const SOURCE_URL =
@@ -38,7 +40,6 @@ function writePlaceholder(note = "placeholder – build failed") {
 function classify(isco) {
   if (!isco) return null;
   const s = String(isco);
-  // Uprav dle potřeby (ISCO → kategorie)
   if (s.startsWith("7231")) return "auto";
   if (s.startsWith("611") || s.startsWith("612")) return "agri";
   if (s.startsWith("512") || s.startsWith("5131")) return "gastro";
@@ -59,7 +60,14 @@ async function main() {
     throw new Error(`Download failed: ${resp.status} ${resp.statusText}`);
   }
 
-  const gunzip = zlib.createGunzip();
+  // Rozhodnutí: gzipovat vstup?
+  const enc = (resp.headers.get("content-encoding") || "").toLowerCase();
+  const ctype = (resp.headers.get("content-type") || "").toLowerCase();
+  const isJsonLd = SOURCE_URL.endsWith(".jsonld") || ctype.includes("ld+json");
+  const shouldGunzip = !enc && (SOURCE_URL.endsWith(".gz") || ctype.includes("gzip"));
+
+  const webStream = Readable.fromWeb(resp.body);
+  const input = shouldGunzip ? webStream.pipe(zlib.createGunzip()) : webStream;
 
   const buckets = { auto: [], agri: [], gastro: [] };
   const wages = { auto: [], agri: [], gastro: [] };
@@ -84,18 +92,33 @@ async function main() {
     }
   }
 
-  // WebStream → Node stream, aby šel přes zlib/pipeline
-  await pipeline(
-    Readable.fromWeb(resp.body).pipe(gunzip),
-    parser(),
-    streamArray(),
-    async function* (stream) {
-      for await (const { value: rec } of stream) {
-        const cat = classify(rec?.czIsco ?? rec?.czIscoKod);
-        if (cat) push(cat, rec);
+  // Pipeline: pokud je JSON-LD, jdeme do "@graph"; jinak očekáváme root = pole
+  if (isJsonLd) {
+    await pipeline(
+      input,
+      parser(),
+      pick({ filter: "@graph" }),
+      streamArray(),
+      async function* (stream) {
+        for await (const { value: rec } of stream) {
+          const cat = classify(rec?.czIsco ?? rec?.czIscoKod);
+          if (cat) push(cat, rec);
+        }
       }
-    }
-  );
+    );
+  } else {
+    await pipeline(
+      input,
+      parser(),
+      streamArray(),
+      async function* (stream) {
+        for await (const { value: rec } of stream) {
+          const cat = classify(rec?.czIsco ?? rec?.czIscoKod);
+          if (cat) push(cat, rec);
+        }
+      }
+    );
+  }
 
   ensureOutDir();
 
