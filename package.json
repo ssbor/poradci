@@ -1,13 +1,11 @@
 {
-  "name": "mpsv-daily-build",
+  "name": "mpsv-daily",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "scripts": {
-    "build": "node tools/build-daily.js",
-    "start": "python3 -m http.server -d public 8000"
+    "build": "node tools/build-daily.js"
   },
   "dependencies": {
-    "stream-json": "^1.9.1"
+    "stream-json": "^1.8.0"
   }
 }
