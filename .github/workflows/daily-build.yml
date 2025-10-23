@@ -2,7 +2,7 @@ name: Daily MPSV Data Build
 
 on:
   schedule:
-    - cron: "7 3 * * *"   # denně v 03:07 UTC
+    - cron: "7 3 * * *"   # 03:07 UTC ~ 05:07 v ČR
   workflow_dispatch: {}
 
 jobs:
@@ -14,7 +14,6 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -25,9 +24,11 @@ jobs:
       - name: Build JSON shards
         run: npm run build
         env:
-          MPSV_URL: https://data.mpsv.cz/od/soubory/volna-mista/volna-mista.jsonld
+          # MŮŽEŠ přepnout na .json.gz (viz build skript – obě varianty umíme):
+          # MPSV_URL: https://data.mpsv.cz/od/soubory/volna-mista/volna-mista.json.gz
+          MPSV_URL: https://data.mpsv.cz/od/soubory/volna-mista/volna-mista.json
 
-      - name: Upload artifact
+      - name: Upload artifact (public/)
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
