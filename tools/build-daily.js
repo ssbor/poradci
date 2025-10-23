@@ -21,6 +21,7 @@ const SOURCE_URL =
 const OUTDIR = "./public/data";
 const MAX_LAST_OFFERS = 200;
 
+// ---- Pomocné funkce ----
 function ensureOutDir() {
   fs.mkdirSync(OUTDIR, { recursive: true });
 }
@@ -62,7 +63,7 @@ function classifyByIsco(isco) {
   return null;
 }
 
-// ——— Normalizace jedné položky podle schématu 'volna-mista' ———
+// ——— Normalizace jedné položky podle schématu 'volna-mista' (JSON/.gz) ———
 function normalizeFromMpsvJson(rec) {
   const profese = rec?.pozadovanaProfese?.cs ?? "";
   const isco = rec?.profeseCzIsco?.id ?? "";
@@ -85,7 +86,7 @@ function normalizeFromMpsvJson(rec) {
     "";
 
   return {
-    kraj: "", // (volitelné) – pokud budeš chtít, doplníme mapování kód→název
+    kraj: "", // (volitelné) – lze doplnit mapováním číselníků
     okres: String(okres || ""),
     profese: String(profese || ""),
     cz_isco: String(isco || ""),
@@ -96,20 +97,29 @@ function normalizeFromMpsvJson(rec) {
   };
 }
 
-// JSON-LD fallback – kdybys používal .jsonld se schema.org JobPosting
+// JSON-LD fallback – pro případ .jsonld (schema.org JobPosting)
 function normalizeFromJsonLd(rec) {
   const profese =
+    rec?.pozadovanaProfese?.cs ??
     rec?.profeseNazev ??
     rec?.title ??
     rec?.name ??
     "";
-  const isco = rec?.czIsco ?? rec?.czIscoKod ?? rec?.occupationalCategory ?? "";
-  let zam = rec?.zamestnavatelNazev ?? rec?.hiringOrganization ?? "";
+  const isco = rec?.profeseCzIsco?.id ?? rec?.czIsco ?? rec?.occupationalCategory ?? "";
+  let zam = rec?.zamestnavatel?.nazev ?? rec?.zamestnavatelNazev ?? rec?.hiringOrganization ?? "";
   if (zam && typeof zam === "object") zam = zam.name ?? "";
   const mzda_od =
-    rec?.mzdaOd ?? rec?.baseSalary?.value?.minValue ?? rec?.baseSalary?.minValue ?? null;
+    rec?.mesicniMzdaOd ??
+    rec?.mzdaOd ??
+    rec?.baseSalary?.value?.minValue ??
+    rec?.baseSalary?.minValue ??
+    null;
   const mzda_do =
-    rec?.mzdaDo ?? rec?.baseSalary?.value?.maxValue ?? rec?.baseSalary?.maxValue ?? null;
+    rec?.mesicniMzdaDo ??
+    rec?.mzdaDo ??
+    rec?.baseSalary?.value?.maxValue ??
+    rec?.baseSalary?.maxValue ??
+    null;
 
   const kraj =
     rec?.krajKod ?? rec?.krajKód ?? rec?.jobLocation?.address?.addressRegion ?? "";
@@ -117,6 +127,8 @@ function normalizeFromJsonLd(rec) {
     rec?.okresKod ?? rec?.okresKód ?? rec?.jobLocation?.address?.addressLocality ?? "";
 
   const datum =
+    rec?.datumZmeny ??
+    rec?.datumVlozeni ??
     rec?.datumAktualizace ??
     rec?.datePosted ??
     rec?.validFrom ??
@@ -134,9 +146,30 @@ function normalizeFromJsonLd(rec) {
   };
 }
 
+// ---- Síť s retry + timeoutem ----
+async function fetchWithRetry(url, { tries = 4, timeoutMs = 120000 } = {}) {
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const ac = new AbortController();
+      const t = setTimeout(() => ac.abort(), timeoutMs);
+      const res = await fetch(url, { signal: ac.signal });
+      clearTimeout(t);
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      return res;
+    } catch (e) {
+      lastErr = e;
+      const backoff = Math.min(30000, 2000 * 2 ** i); // 2s, 4s, 8s, 16s, max 30s
+      console.warn(`Fetch failed (attempt ${i + 1}/${tries}): ${e}. Retrying in ${backoff} ms...`);
+      await new Promise(r => setTimeout(r, backoff));
+    }
+  }
+  throw lastErr;
+}
+
 async function main() {
   console.log("⬇️ Stahuji:", SOURCE_URL);
-  const resp = await fetch(SOURCE_URL);
+  const resp = await fetchWithRetry(SOURCE_URL, { tries: 4, timeoutMs: 180000 });
   if (!resp.ok || !resp.body) {
     throw new Error(`Download failed: ${resp.status} ${resp.statusText}`);
   }
@@ -169,7 +202,7 @@ async function main() {
   async function* sink(stream) {
     for await (const { value: rec } of stream) {
       const norm = isJsonLd ? normalizeFromJsonLd(rec) : normalizeFromMpsvJson(rec);
-      if (sample.length < 50) sample.push(norm);
+      if (sample.length < 50) sample.push(norm); // diagnostika
       ingest(norm);
     }
   }
@@ -217,6 +250,8 @@ try {
   await main();
 } catch (e) {
   console.error("❌ Build failed:", e);
+  // zapíšeme placeholdery a dovolíme deployi doběhnout,
+  // aby se stránka nezlomila (ať je co načíst)
   writePlaceholder(String(e));
   process.exit(0);
 }
