@@ -1,10 +1,15 @@
 // tools/build-daily.js
+// Node 20+, ESM. Vyžaduje: "type": "module" v package.json a dep "stream-json".
 import fs from "fs";
 import { pipeline } from "node:stream/promises";
-import { Readable } from "node:stream";                 // ← node:… je přesnější alias
-import { parser } from "stream-json/Parser.js";         // ✅ ESM cesta s .js
-import { streamArray } from "stream-json/streamers/StreamArray.js"; // ✅ ESM cesta s .js
+import { Readable } from "node:stream";
 import zlib from "zlib";
+
+// ⚠️ stream-json je CommonJS → vezmeme default import a z něj destrukturalizujeme:
+import parserPkg from "stream-json/Parser.js";
+import streamArrayPkg from "stream-json/streamers/StreamArray.js";
+const { parser } = parserPkg;
+const { streamArray } = streamArrayPkg;
 
 const SOURCE_URL =
   process.env.MPSV_URL ||
@@ -33,6 +38,7 @@ function writePlaceholder(note = "placeholder – build failed") {
 function classify(isco) {
   if (!isco) return null;
   const s = String(isco);
+  // Uprav dle potřeby (ISCO → kategorie)
   if (s.startsWith("7231")) return "auto";
   if (s.startsWith("611") || s.startsWith("612")) return "agri";
   if (s.startsWith("512") || s.startsWith("5131")) return "gastro";
@@ -78,8 +84,9 @@ async function main() {
     }
   }
 
+  // WebStream → Node stream, aby šel přes zlib/pipeline
   await pipeline(
-    Readable.fromWeb(resp.body).pipe(gunzip), // ✅ WebStream → Node stream
+    Readable.fromWeb(resp.body).pipe(gunzip),
     parser(),
     streamArray(),
     async function* (stream) {
