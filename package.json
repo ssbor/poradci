@@ -2,6 +2,10 @@
   "name": "mpsv-daily",
   "version": "1.0.0",
   "type": "module",
-  "scripts": { "build": "node tools/build-daily.js" },
-  "dependencies": { "stream-json": "^1.9.1" }
+  "scripts": {
+    "build": "node tools/build-daily.js"
+  },
+  "dependencies": {
+    "stream-json": "^1.9.1"
+  }
 }
