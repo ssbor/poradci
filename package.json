@@ -6,6 +6,6 @@
     "build": "node tools/build-daily.js"
   },
   "dependencies": {
-    "stream-json": "^1.8.0"
+    "stream-json": "^1.9.1"
   }
 }
