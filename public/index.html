@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Školní Bezpečnost – denní data (MPSV)</title>
+  <title>Volná místa – denní build (MPSV)</title>
   <style>
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial; margin:20px;}
     header{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
@@ -19,7 +19,7 @@
 </head>
 <body>
   <h1>Denní data volných míst (MPSV)</h1>
-  <p class="muted">Automaticky generováno GitHub Actions z <code>volna-mista.json.gz</code>. Vyber kategorii.</p>
+  <p class="muted">Generováno v GitHub Actions z <code>volna-mista.json.gz</code>.</p>
 
   <header>
     <span class="pill active" data-tag="auto">Auto</span>
@@ -79,7 +79,6 @@ document.querySelectorAll('.pill').forEach(el=>{
     render(current, data);
   });
 });
-// init
 loadData(current).then(d=>render(current,d)).catch(()=>{
   document.getElementById('count').textContent = '—';
 });
