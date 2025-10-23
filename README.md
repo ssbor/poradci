@@ -1,0 +1,2 @@
+# poradci
+cesta Boráčků
