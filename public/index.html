@@ -5,6 +5,7 @@
 <title>UKÁZKA – SŠ Bor · 3 obory (Automechanik · Opravář ZS · Kuchař‑číšník)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+chatbot.css
 :root{
   /* společné barvy */
   --ink:#0e1a2b; --paper:#fff; --line:#e9eef7;
@@ -385,6 +386,25 @@ fetch('/data/job_offers.json')
   <div id="chatbot-messages"></div>
   <input type="text" id="chatbot-input" placeholder="Napiš zprávu...">
 </div>
+
+  
+<div id="chat-trigger">?</div>
+
+<div id="chat-window">
+    <div class="chat-header">
+        <h3>Kariérový poradce online</h3>
+        <p>Jak ti mohu pomoci?</p>
+    </div>
+
+    <div class="chat-messages" id="chat-messages"></div>
+
+    <div class="chat-input">
+        <input type="text" id="chat-input-field" placeholder="Napište svou zprávu...">
+        <button id="chat-send-btn">→</button>
+    </div>
+</div>
+
+chatbot.js</script>
 
   
 </body></html>
