@@ -1,0 +1,57 @@
+[
+  {
+    "obor": "Automechanik",
+    "area": "zahranici_bor",
+    "pocet_mist": 100,
+    "mzda_median_mesicne": "1308 €",
+    "cz_isco": "7231 / 72311",
+    "nabidky": [
+      {
+        "profese": "Automechanik",
+        "zamestnavatel": "Autohaus Müller",
+        "okres": "Weiden",
+        "mzda": "1300–1500 €",
+        "datum": "2025-11-06"
+      }
+    ]
+  },
+  {
+    "obor": "Opravář zemědělských strojů",
+    "area": "zahranici_bor",
+    "pocet_mist": 12,
+    "mzda_median_mesicne": "2100–2400 €",
+    "cz_isco": "7233 / 72336",
+    "nabidky": [
+      {
+        "profese": "Opravář zemědělských strojů",
+        "zamestnavatel": "Landtechnik GmbH",
+        "okres": "Tirschenreuth",
+        "mzda": "13–15 € / hod",
+        "datum": "2025-11-06"
+      }
+    ]
+  },
+  {
+    "obor": "Kuchař‑číšník",
+    "area": "zahranici_bor",
+    "pocet_mist": 10,
+    "mzda_median_mesicne": "2200–3000 €",
+    "cz_isco": "5120 / 51201",
+    "nabidky": [
+      {
+        "profese": "Kuchař",
+        "zamestnavatel": "Hotel Bräu Wirt",
+        "okres": "Tirschenreuth",
+        "mzda": "3000 € brutto",
+        "datum": "2025-11-06"
+      },
+      {
+        "profese": "Číšník",
+        "zamestnavatel": "Altstadt Hotel",
+        "okres": "Weiden",
+        "mzda": "2200 € + dýška",
+        "datum": "2025-11-06"
+      }
+    ]
+  }
+]
