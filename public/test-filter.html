@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Test filtru regionů</title>
+</head>
+<body>
+  <h1>Test filtru pracovních míst</h1>
+
+  <label for="regionFilter">Vyber region:</label>
+  <select id="regionFilter">
+    <option value="">Všechny</option>
+    <option value="plzensky">Plzeňský kraj</option>
+    <option value="zahranici_bor">Zahraničí (do 70 km od Boru)</option>
+  </select>
+
+  <button onclick="applyFilter()">Filtrovat</button>
+
+  <ul id="jobList"></ul>
+
+  <script>
+    const regionFilter = document.getElementById('regionFilter');
+
+    const allJobs = [
+      { region: 'plzensky', area: '', title: 'Automechanik Plzeň' },
+      { region: '', area: 'zahranici_bor', title: 'Kuchař v Německu' },
+      { region: 'karlovarsky', area: '', title: 'Opravář ZS Karlovy Vary' }
+    ];
+
+    function filterJobs(jobs) {
+      const selectedRegion = regionFilter.value;
+
+      return jobs.filter(job => {
+        if (selectedRegion === 'zahranici_bor') {
+          return job.area === 'zahranici_bor';
+        } else {
+          return !selectedRegion || job.region === selectedRegion;
+        }
+      });
+    }
+
+    function applyFilter() {
+      const filtered = filterJobs(allJobs);
+      const list = document.getElementById('jobList');
+      list.innerHTML = '';
+      filtered.forEach(job => {
+        const li = document.createElement('li');
+        li.textContent = job.title;
+        list.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
