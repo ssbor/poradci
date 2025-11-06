@@ -1,0 +1,137 @@
+/* --- Chatbot Styles --- */
+
+:root {
+	--font-modern: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--color-primary: #007bff;
+	--color-background: #f0f8ff;
+	--color-header: #e0f0ff;
+	--color-text: #333;
+	--color-bot-msg: #fff;
+	--color-user-msg: #d1eaff;
+}
+
+#chat-trigger {
+	position: fixed;
+	bottom: 25px;
+	right: 25px;
+	width: 60px;
+	height: 60px;
+	background-color: var(--color-primary);
+	color: white;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 30px;
+	font-weight: bold;
+	font-family: var(--font-modern);
+	cursor: pointer;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+	transition: transform 0.2s ease-out;
+	z-index: 9998;
+}
+
+#chat-trigger:hover {
+	transform: scale(1.1);
+}
+
+#chat-window {
+	position: fixed;
+	bottom: 100px;
+	right: 25px;
+	width: 350px;
+	height: 500px;
+	background-color: var(--color-background);
+	border-radius: 15px;
+	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+	display: none;
+	flex-direction: column;
+	overflow: hidden;
+	font-family: var(--font-modern);
+	z-index: 9999;
+}
+
+.chat-header {
+	padding: 20px;
+	background-color: var(--color-header);
+	color: var(--color-text);
+	text-align: center;
+	background-image: linear-gradient(rgba(224, 240, 255, 0.8), rgba(224, 240, 255, 0.8)), url('logoskoly.jpg');
+	background-size: cover;
+	background-position: center;
+	border-bottom: 1px solid #ddd;
+}
+
+.chat-header h3 {
+	margin: 0;
+	font-size: 22px;
+	font-weight: 600;
+}
+
+.chat-header p {
+	margin: 5px 0 0;
+	font-size: 14px;
+	color: #555;
+}
+
+.chat-messages {
+	flex-grow: 1;
+	padding: 15px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.chat-message {
+	padding: 10px 15px;
+	border-radius: 20px;
+	max-width: 80%;
+	line-height: 1.4;
+}
+
+.chat-message.bot {
+	background-color: var(--color-bot-msg);
+	color: var(--color-text);
+	align-self: flex-start;
+	border: 1px solid #eee;
+}
+
+.chat-message.user {
+	background-color: var(--color-primary);
+	color: white;
+	align-self: flex-end;
+}
+
+.chat-input {
+	display: flex;
+	border-top: 1px solid #ddd;
+	padding: 10px;
+	background-color: #fff;
+}
+
+.chat-input input {
+	flex-grow: 1;
+	border: 1px solid #ccc;
+	border-radius: 20px;
+	padding: 10px 15px;
+	font-size: 14px;
+	font-family: var(--font-modern);
+	outline: none;
+}
+
+.chat-input button {
+	background-color: var(--color-primary);
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	margin-left: 10px;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.chat-input button:hover {
+	background-color: #0056b3;
+}
