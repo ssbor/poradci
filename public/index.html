@@ -304,48 +304,6 @@ Array.from(document.querySelectorAll('select[data-role=region]')).forEach(sel=>{
 ['auto','agri','gastro'].forEach(render);
 </script>
 
-<script>
-(function(){
-  async function load(tag){
-    const res = await fetch('data/'+tag+'.json?_=' + Date.now());
-    return res.json();
-  }
-  async function init(){
-    for (const tag of ['auto','agri','gastro']) {
-      try {
-        const data = await load(tag);
-        const cnt = document.querySelector(`[data-id=count-${tag}]`);
-        if (cnt) cnt.textContent = data.summary?.count ?? '–';
-        const med = document.querySelector(`[data-id=median-${tag}]`);
-        if (med) med.textContent = data.summary?.median_wage_low ?? '–';
-        const tb = document.querySelector(`[data-id=tbl-${target}]`);
-        if (tb) {
-          tb.innerHTML = '';
-          (data.last_offers||[]).forEach(r=>{
-            const mzda = (r.mzda_od??'') + ((r.mzda_do)? '–'+r.mzda_do : '');
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${r.profese||''}</td><td>${r.zamestnavatel||''}</td><td>${r.okres||''}</td><td>${mzda||''}</td><td>${r.datum||''}</td>`;
-            tb.appendChild(tr);
-          });
-        }
-        const ol = document.querySelector(`[data-id=top-${target}]`);
-        if (ol) {
-          ol.innerHTML = '';
-          (data.top_employers||[]).forEach(e=>{
-            const li = document.createElement('li');
-            li.textContent = `${e.name} (${e.count})`;
-            ol.appendChild(li);
-          });
-        }
-      } catch(e){ console.warn('Data load failed for', tag, e); }
-    }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
-})();
-</script>
-
-
 <div id="chat-trigger">?</div>
 
 <div id="chat-window">
