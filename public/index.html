@@ -210,22 +210,41 @@ th{ font-size:.92rem; color:#40506b; }
 // ===== Demo datasety (statická ukázka) =====
 const DATA = {
   auto: [
-    /* === VLOŽENÁ DATA === */
-    {kraj:"Německo", area:"zahranici_bor", okres:"Marktleuthen", profese:"Land-/Baumaschinenmechatroniker/in", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"Wunderlich Christof", datum:"2025-10-20"},
-    {kraj:"Německo", area:"zahranici_bor", okres:"Bad Laer", profese:"Landmaschinenmechaniker/in", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"SOVEA Personalservice GmbH", datum:"2025-10-19"},
-    {kraj:"Německo", area:"zahranici_bor", okres:"Friesoythe", profese:"Landmaschinenmechaniker/in", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"pluss Personalmanagement GmbH", datum:"2025-10-18"},
-    /* === KONEC VLOŽENÝCH DAT === */
+    /* === NOVÁ DATA (AUTO) === */
+    {kraj:"Německo", area:"zahranici_bor", okres:"92637 Weiden", profese:"Kfz-Mechaniker / Mechatroniker (m/w/d)", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"A.T.U Auto-Teile-Unger", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"92637 Weiden", profese:"Zweiradmechatroniker (m/w/d)", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"Zweirad-Center Weiden", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"92729 Weiherhammer", profese:"Industriemechaniker (m/w/d)", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"BHS Corrugated", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"92637 Weiden", profese:"KFZ-Mechatroniker (m/w/d) - Nutzfahrzeugtechnik", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"Autohaus Weiden", datum:"2025-11-07"},
+    /* === PŮVODNÍ CZ DATA (AUTO) === */
     {kraj:"CZ032", okres:"Plzeň-město", profese:"Mechanik opravář motorových vozidel (automechanik)", cz_isco:"72311", mzda_od:28000, mzda_do:35000, zamestnavatel:"AutoServis Plzeň s.r.o.", datum:"2025-10-15"},
     {kraj:"CZ032", okres:"Tachov", profese:"Automechanik", cz_isco:"72311", mzda_od:29000, mzda_do:36000, zamestnavatel:"Truck & Car Tachov a.s.", datum:"2025-10-14"},
     {kraj:"CZ041", okres:"Karlovy Vary", profese:"Automechanik – osobní vozy", cz_isco:"72311", mzda_od:27000, mzda_do:34000, zamestnavatel:"KV Auto, spol. s r.o.", datum:"2025-10-13"},
     {kraj:"CZ041", okres:"Sokolov", profese:"Mechanik opravář motorových vozidel", cz_isco:"72311", mzda_od:26000, mzda_do:33000, zamestnavatel:"Sokolov Auto Repair", datum:"2025-10-12"}
   ],
   agri: [
+    /* === PŮVODNÍ PŘESUNUTÁ DATA (AGRI) === */
+    {kraj:"Německo", area:"zahranici_bor", okres:"Marktleuthen", profese:"Land-/Baumaschinenmechatroniker/in", cz_isco:"72334", mzda_od:30000, mzda_do:40000, zamestnavatel:"Wunderlich Christof", datum:"2025-10-20"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"Bad Laer", profese:"Landmaschinenmechaniker/in", cz_isco:"72334", mzda_od:30000, mzda_do:40000, zamestnavatel:"SOVEA Personalservice GmbH", datum:"2025-10-19"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"Friesoythe", profese:"Landmaschinenmechaniker/in", cz_isco:"72334", mzda_od:30000, mzda_do:40000, zamestnavatel:"pluss Personalmanagement GmbH", datum:"2025-10-18"},
+    /* === NOVÁ DATA (AGRI) === */
+    {kraj:"Německo", area:"zahranici_bor", okres:"95643 Tirschenreuth", profese:"Land- und Baumaschinenmechatroniker/in", cz_isco:"72334", mzda_od:30000, mzda_do:40000, zamestnavatel:"BayWa AG", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"95632 Wunsiedel", profese:"Land- und Baumaschinenmechatroniker (m/w/d)", cz_isco:"72334", mzda_od:30000, mzda_do:40000, zamestnavatel:"XXXLutz", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"95676 Wiesau", profese:"Servicetechniker für Landmaschinen (m/w/d)", cz_isco:"72334", mzda_od:30000, mzda_do:40000, zamestnavatel:"CLAAS", datum:"2025-11-07"},
+    /* === PŮVODNÍ CZ DATA (AGRI) === */
     {kraj:"CZ032", okres:"Klatovy", profese:"Opravář zemědělských strojů", cz_isco:"72334", mzda_od:29000, mzda_do:38000, zamestnavatel:"Agro KT Servis s.r.o.", datum:"2025-10-15"},
     {kraj:"CZ032", okres:"Plzeň-jih", profese:"Mechanik zemědělské techniky", cz_isco:"72334", mzda_od:30000, mzda_do:40000, zamestnavatel:"ZETOR Agro Plzeň", datum:"2025-10-14"},
     {kraj:"CZ041", okres:"Cheb", profese:"Opravář zemědělských a lesnických strojů", cz_isco:"72334", mzda_od:28000, mzda_do:37000, zamestnavatel:"FarmTech Západ", datum:"2025-10-13"}
   ],
   gastro: [
+    /* === NOVÁ DATA (GASTRO) === */
+    {kraj:"Německo", area:"zahranici_bor", okres:"95632 Wunsiedel", profese:"Koch (m/w/d)", cz_isco:"5120", mzda_od:28000, mzda_do:35000, zamestnavatel:"Hotel Bayerischer Hof", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"92637 Weiden", profese:"Koch (m/w/d)", cz_isco:"5120", mzda_od:28000, mzda_do:35000, zamestnavatel:"BräuWirt", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"95652 Waldsassen", profese:"Alleinkoch (m/w/d)", cz_isco:"5120", mzda_od:28000, mzda_do:35000, zamestnavatel:"Hotel zum ehem. Königlich-Bayerischen Forsthaus", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"92637 Weiden i.d.OPf.", profese:"Kellner / Servicemitarbeiter (m/w/d)", cz_isco:"5131", mzda_od:26000, mzda_do:32000, zamestnavatel:"Hotel Stadtkrug", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"95698 Neualbenreuth", profese:"Servicekraft (m/w/d)", cz_isco:"5131", mzda_od:26000, mzda_do:32000, zamestnavatel:"Schlosshotel Ernestgrün", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"95643 Tirschenreuth", profese:"Koch/Köchin", cz_isco:"5120", mzda_od:28000, mzda_do:35000, zamestnavatel:"Kliniken Nordoberpfalz AG", datum:"2025-11-07"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"95643 Tirschenreuth", profese:"Koch (m/w/d) Pflegeheim", cz_isco:"5120", mzda_od:28000, mzda_do:35000, zamestnavatel:"BRK-Kreisverband Tirschenreuth", datum:"2025-11-07"},
+    /* === PŮVODNÍ CZ DATA (GASTRO) === */
     {kraj:"CZ032", okres:"Plzeň-město", profese:"Kuchař – teplá kuchyně", cz_isco:"51201", mzda_od:26000, mzda_do:32000, zamestnavatel:"Restaurace U Zvonu", datum:"2025-10-15"},
     {kraj:"CZ032", okres:"Tachov", profese:"Číšník/servírka", cz_isco:"5131", mzda_od:23000, mzda_do:30000, zamestnavatel:"Hotel Svět", datum:"2025-10-14"},
     {kraj:"CZ041", okres:"Karlovy Vary", profese:"Kuchař studené kuchyně", cz_isco:"51201", mzda_od:24000, mzda_do:31000, zamestnavatel:"Grand Bistro KV", datum:"2025-10-13"},
