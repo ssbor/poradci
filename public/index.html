@@ -64,7 +64,6 @@ th{ font-size:.92rem; color:#40506b; }
 <body>
 <div class="container">
 
-  <!-- ========== AUTOMECHANIK (modrá) ========== -->
   <section class="section" id="sec-auto">
     <div class="hero hero--auto">
       <div class="hero-row">
@@ -111,7 +110,6 @@ th{ font-size:.92rem; color:#40506b; }
     </div>
   </section>
 
-  <!-- ========== OPRAVÁŘ ZEMĚDĚLSKÝCH STROJŮ (zelená) ========== -->
   <section class="section" id="sec-agri">
     <div class="hero hero--agri">
       <div class="hero-row">
@@ -159,7 +157,6 @@ th{ font-size:.92rem; color:#40506b; }
     </div>
   </section>
 
-  <!-- ========== KUCHAŘ‑ČÍŠNÍK (červená) ========== -->
   <section class="section" id="sec-gastro">
     <div class="hero hero--gastro">
       <div class="hero-row">
@@ -213,6 +210,11 @@ th{ font-size:.92rem; color:#40506b; }
 // ===== Demo datasety (statická ukázka) =====
 const DATA = {
   auto: [
+    /* === VLOŽENÁ DATA === */
+    {kraj:"Německo", area:"zahranici_bor", okres:"Marktleuthen", profese:"Land-/Baumaschinenmechatroniker/in", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"Wunderlich Christof", datum:"2025-10-20"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"Bad Laer", profese:"Landmaschinenmechaniker/in", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"SOVEA Personalservice GmbH", datum:"2025-10-19"},
+    {kraj:"Německo", area:"zahranici_bor", okres:"Friesoythe", profese:"Landmaschinenmechaniker/in", cz_isco:"72311", mzda_od:30000, mzda_do:40000, zamestnavatel:"pluss Personalmanagement GmbH", datum:"2025-10-18"},
+    /* === KONEC VLOŽENÝCH DAT === */
     {kraj:"CZ032", okres:"Plzeň-město", profese:"Mechanik opravář motorových vozidel (automechanik)", cz_isco:"72311", mzda_od:28000, mzda_do:35000, zamestnavatel:"AutoServis Plzeň s.r.o.", datum:"2025-10-15"},
     {kraj:"CZ032", okres:"Tachov", profese:"Automechanik", cz_isco:"72311", mzda_od:29000, mzda_do:36000, zamestnavatel:"Truck & Car Tachov a.s.", datum:"2025-10-14"},
     {kraj:"CZ041", okres:"Karlovy Vary", profese:"Automechanik – osobní vozy", cz_isco:"72311", mzda_od:27000, mzda_do:34000, zamestnavatel:"KV Auto, spol. s r.o.", datum:"2025-10-13"},
@@ -236,7 +238,17 @@ function median(arr){ if(!arr.length) return null; const s=[...arr].sort((a,b)=>
 function render(target){
   const regionSel = document.querySelector(`select[data-role=region][data-target=${target}]`);
   const region = regionSel ? regionSel.value : '';
-  const rows = (DATA[target]||[]).filter(r=> !region || r.kraj===region).sort((a,b)=> (b.datum||'').localeCompare(a.datum||''));
+  
+  /* === UPRAVENÝ FILTR === */
+  const rows = (DATA[target]||[]).filter(r => {
+    // Nová logika pro zahraničí
+    if (region === 'zahranici_bor') {
+      return r.area === 'zahranici_bor';
+    }
+    // Původní logika pro české kraje
+    return !region || r.kraj === region;
+  }).sort((a,b)=> (b.datum||'').localeCompare(a.datum||''));
+  /* === KONEC UPRAVENÉHO FILTRU === */
 
   // count & median
   const wages = rows.map(r=> r.mzda_od).filter(v=> typeof v==='number' && !Number.isNaN(v));
@@ -273,7 +285,6 @@ Array.from(document.querySelectorAll('select[data-role=region]')).forEach(sel=>{
 ['auto','agri','gastro'].forEach(render);
 </script>
 
-<!-- Injected fetch loader -->
 <script>
 (function(){
   async function load(tag){
@@ -288,7 +299,7 @@ Array.from(document.querySelectorAll('select[data-role=region]')).forEach(sel=>{
         if (cnt) cnt.textContent = data.summary?.count ?? '–';
         const med = document.querySelector(`[data-id=median-${tag}]`);
         if (med) med.textContent = data.summary?.median_wage_low ?? '–';
-        const tb = document.querySelector(`[data-id=tbl-${tag}]`);
+        const tb = document.querySelector(`[data-id=tbl-${target}]`);
         if (tb) {
           tb.innerHTML = '';
           (data.last_offers||[]).forEach(r=>{
@@ -298,7 +309,7 @@ Array.from(document.querySelectorAll('select[data-role=region]')).forEach(sel=>{
             tb.appendChild(tr);
           });
         }
-        const ol = document.querySelector(`[data-id=top-${tag}]`);
+        const ol = document.querySelector(`[data-id=top-${target}]`);
         if (ol) {
           ol.innerHTML = '';
           (data.top_employers||[]).forEach(e=>{
