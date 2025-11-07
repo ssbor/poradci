@@ -8,9 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	const chatInput = document.getElementById("chat-input-field");
 	const chatSendButton = document.getElementById("chat-send-btn");
 
-    // === KROK 1: PŘIDÁNÍ "PAMĚTI" ===
-    // Tato proměnná si bude pamatovat, na jaký obor se uživatel ptal.
-    // Bude obsahovat 'auto', 'agri', 'gastro', nebo null.
+    // Paměť pro téma konverzace
     let pendingTopic = null;
 
 	// 1. Přepínání viditelnosti okna
@@ -69,21 +67,23 @@ document.addEventListener("DOMContentLoaded", () => {
 		const input = userInput.toLowerCase();
 
         // === ČÁST A: ZPRACOVÁNÍ ODPOVĚDI NA LOKALITU ===
-        // Nejdřív zkontrolujeme, jestli na něco čekáme.
         if (pendingTopic) {
             let regionFilter = null;
             let regionName = "";
 
-            if (input.includes("plzeň") || input.includes("plzeňský")) {
+            // --- ZDE JE ÚPRAVA PRO DIAKRITIKU ---
+            if (input.includes("plzeň") || input.includes("plzeňský") || input.includes("plzen") || input.includes("plzensky")) {
                 regionFilter = 'CZ032';
                 regionName = "v Plzeňském kraji";
-            } else if (input.includes("karlovar") || input.includes("karlovarský")) {
+            } else if (input.includes("karlovar") || input.includes("karlovarský") || input.includes("karlovarsky")) {
                 regionFilter = 'CZ041';
                 regionName = "v Karlovarském kraji";
-            } else if (input.includes("zahraničí") || input.includes("německo")) {
+            } else if (input.includes("zahraničí") || input.includes("německo") || input.includes("zahranici") || input.includes("nemecko")) {
                 regionFilter = 'zahranici_bor';
                 regionName = "v zahraničí";
             }
+            // --- KONEC ÚPRAVY PRO DIAKRITIKU ---
+
 
             // Pokud jsme našli lokalitu
             if (regionFilter) {
@@ -121,20 +121,20 @@ document.addEventListener("DOMContentLoaded", () => {
 			return "Dobrý den! Jsem online kariérový poradce. Můžete se mě zeptat na konkrétní pracovní obor.";
 		}
 
-		// Automechanik
-		if (input.includes("automechanik") || input.includes("mechanik") || input.includes("auta")) {
+		// Automechanik (tady taky přidáme rozpoznávání bez diakritiky)
+		if (input.includes("automechanik") || input.includes("mechanik") || input.includes("auta") || input.includes("automechanik") || input.includes("mechanik")) {
             pendingTopic = 'auto'; // Uložíme si, že se ptá na AUTA
 			return "Skvělá volba. Kde byste chtěl pracovat?\n\n(Napište mi: Plzeňský kraj, Karlovarský kraj, nebo Zahraničí)";
 		}
 
 		// Kuchař nebo číšník
-		if (input.includes("kuchař") || input.includes("kuchařka") || input.includes("číšník") || input.includes("servírka") || input.includes("gastro")) {
+		if (input.includes("kuchař") || input.includes("kuchařka") || input.includes("číšník") || input.includes("servírka") || input.includes("gastro") || input.includes("kuchar") || input.includes("cisnik")) {
 			pendingTopic = 'gastro'; // Uložíme si, že se ptá na GASTRO
             return "Rozumím. Pro jakou lokalitu hledáte?\n\n(Napište: Plzeňský kraj, Karlovarský kraj, nebo Zahraničí)";
 		}
 
 		// Opravář zemědělských strojů
-		if (input.includes("opravář") || input.includes("zemědělských") || input.includes("agri")) {
+		if (input.includes("opravář") || input.includes("zemědělských") || input.includes("agri") || input.includes("opravar") || input.includes("zemedelskych")) {
 			pendingTopic = 'agri'; // Uložíme si, že se ptá na AGRI
             return "Výborně. Hledáte v Plzeňském kraji, Karlovarském kraji, nebo v zahraničí?";
 		}
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			return "Omlouvám se, na této ukázkové stránce nemám k dispozici kontaktní údaje. Jsem jen chatbot pro demonstraci nabídek práce.";
 		}
 		if (input.includes("služby") || input.includes("pomoc") || input.includes("životopis") || input.includes("cv")) {
-			return "Mojí hlavní funkcí je ukazovat vám přehled pracovních nabídek. Pro specifické služby jako tvorba CV se prosím obraťte přímo na kariérního poradce.";
+			return "Mojí hlavní funkcí je ukazovat vám přehled pracovních nabídek. Pro specifické služby jako tvorba CV se prosím obraťte přímo na kariéního poradce.";
 		}
 		if (input.includes("díky") || input.includes("děkuji")) {
 			return "Rádo se stalo! Přeji hezký den.";
