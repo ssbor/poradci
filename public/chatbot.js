@@ -8,13 +8,19 @@ document.addEventListener("DOMContentLoaded", () => {
 	const chatInput = document.getElementById("chat-input-field");
 	const chatSendButton = document.getElementById("chat-send-btn");
 
+    // === KROK 1: PŘIDÁNÍ "PAMĚTI" ===
+    // Tato proměnná si bude pamatovat, na jaký obor se uživatel ptal.
+    // Bude obsahovat 'auto', 'agri', 'gastro', nebo null.
+    let pendingTopic = null;
+
 	// 1. Přepínání viditelnosti okna
 	chatTrigger.addEventListener("click", () => {
 		if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
 			chatWindow.style.display = "flex";
 			// Uvítací zpráva, pokud je chat prázdný
 			if (chatMessages.children.length === 0) {
-				addMessageToChat("Dobrý den! Jsem online kariérový poradce. Zeptejte se mě třeba na nabídky práce pro kuchaře nebo automechanika.", "bot");
+                pendingTopic = null; // Vždy resetujeme paměť při otevření
+				addMessageToChat("Dobrý den! Jsem online kariérový poradce. Zeptejte se mě na konkrétní obor (např. 'automechanik', 'kuchař' nebo 'opravář').", "bot");
 			}
 		} else {
 			chatWindow.style.display = "none";
@@ -51,59 +57,101 @@ document.addEventListener("DOMContentLoaded", () => {
 	const addMessageToChat = (text, sender) => {
 		const messageElement = document.createElement("div");
 		messageElement.classList.add("chat-message", sender);
-		messageElement.textContent = text;
+		messageElement.innerHTML = text.replace(/\n/g, '<br>'); // Podporuje nové řádky
 		chatMessages.appendChild(messageElement);
-
-		// Automaticky odroluje na poslední zprávu
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 	};
 
-	// 4. "Mozek" chatbota - ODPOVĚDI UPRAVENÉ PRO TVŮJ WEB
+
+	// 4. "Mozek" chatbota - VERZE S PAMĚTÍ
+	// (Proměnná 'DATA' je definovaná v souboru index.html)
 	const getBotResponse = (userInput) => {
-		const input = userInput.toLowerCase(); // Převod na malá písmena pro snadnější porovnání
+		const input = userInput.toLowerCase();
+
+        // === ČÁST A: ZPRACOVÁNÍ ODPOVĚDI NA LOKALITU ===
+        // Nejdřív zkontrolujeme, jestli na něco čekáme.
+        if (pendingTopic) {
+            let regionFilter = null;
+            let regionName = "";
+
+            if (input.includes("plzeň") || input.includes("plzeňský")) {
+                regionFilter = 'CZ032';
+                regionName = "v Plzeňském kraji";
+            } else if (input.includes("karlovar") || input.includes("karlovarský")) {
+                regionFilter = 'CZ041';
+                regionName = "v Karlovarském kraji";
+            } else if (input.includes("zahraničí") || input.includes("německo")) {
+                regionFilter = 'zahranici_bor';
+                regionName = "v zahraničí";
+            }
+
+            // Pokud jsme našli lokalitu
+            if (regionFilter) {
+                const dataSet = DATA[pendingTopic]; // 'auto', 'agri', nebo 'gastro'
+                let foundJob = null;
+
+                if (regionFilter === 'zahranici_bor') {
+                    foundJob = dataSet.find(job => job.area === 'zahranici_bor');
+                } else {
+                    foundJob = dataSet.find(job => job.kraj === regionFilter);
+                }
+
+                // Důležité: Vymažeme paměť, aby se bot neptal znovu.
+                const topicName = pendingTopic; // Uložíme si název oboru pro odpověď
+                pendingTopic = null; 
+
+                if (foundJob) {
+                    return `OK, ${regionName} pro obor ${topicName} jsem našel například:\n\n"${foundJob.profese}"\nu firmy: ${foundJob.zamestnavatel}\nv místě: ${foundJob.okres}.\n\nVšechny ostatní nabídky najdete v příslušné tabulce na stránce.`;
+                } else {
+                    return `Bohužel, ${regionName} pro obor ${topicName} zrovna teď v datech žádnou nabídku nevidím. Zkuste se podívat přímo do tabulky na jiný kraj.`;
+                }
+
+            } else {
+                // Uživatel odpověděl, ale nebylo to ani jedno z míst.
+                pendingTopic = null; // Resetujeme paměť.
+                return "Tomu jsem nerozuměl. Zkusme to prosím znovu od začátku. O jaký obor máte zájem?";
+            }
+        }
+
+        // === ČÁST B: ZPRACOVÁNÍ NOVÉ OTÁZKY ===
+        // Toto se spustí, jen pokud na nic nečekáme (pendingTopic === null)
 
 		// Přivítání
 		if (input.includes("ahoj") || input.includes("dobrý den") || input.includes("zdravím")) {
-			return "Dobrý den! Jsem online kariérový poradce. Můžete se mě zeptat na konkrétní pracovní nabídky.";
+			return "Dobrý den! Jsem online kariérový poradce. Můžete se mě zeptat na konkrétní pracovní obor.";
 		}
 
 		// Automechanik
-		if (input.includes("automechanik") || input.includes("mechanik")) {
-			return "Ano, pro automechaniky máme několik nabídek. Najdete je všechny pohromadě, když sjedete dolů na modrou sekci 'Automechanik' a podíváte se do tabulky.";
+		if (input.includes("automechanik") || input.includes("mechanik") || input.includes("auta")) {
+            pendingTopic = 'auto'; // Uložíme si, že se ptá na AUTA
+			return "Skvělá volba. Kde byste chtěl pracovat?\n\n(Napište mi: Plzeňský kraj, Karlovarský kraj, nebo Zahraničí)";
 		}
 
 		// Kuchař nebo číšník
-		if (input.includes("kuchař") || input.includes("kuchařka") || input.includes("číšník") || input.includes("servírka")) {
-			return "Nabídky pro kuchaře a číšníky najdete v červené sekci 'Kuchař‑číšník'. Stačí sjet dolů a podívat se do tabulky.";
+		if (input.includes("kuchař") || input.includes("kuchařka") || input.includes("číšník") || input.includes("servírka") || input.includes("gastro")) {
+			pendingTopic = 'gastro'; // Uložíme si, že se ptá na GASTRO
+            return "Rozumím. Pro jakou lokalitu hledáte?\n\n(Napište: Plzeňský kraj, Karlovarský kraj, nebo Zahraničí)";
 		}
 
 		// Opravář zemědělských strojů
 		if (input.includes("opravář") || input.includes("zemědělských") || input.includes("agri")) {
-			return "Ano, podívejte se prosím do zelené sekce 'Opravář zemědělských strojů'. V tabulce najdete všechny aktuální nabídky.";
+			pendingTopic = 'agri'; // Uložíme si, že se ptá na AGRI
+            return "Výborně. Hledáte v Plzeňském kraji, Karlovarském kraji, nebo v zahraničí?";
 		}
 		
-		// Dotaz na zahraničí
-		if (input.includes("zahraničí") || input.includes("německo")) {
-			return "Ano, máme nabídky i ze zahraničí (Německo). U každé kategorie (Automechanik, Opravář...) najdete filtr, kde stačí přepnout na 'Zahraničí (do 70km od Boru)' a zobrazí se vám.";
-		}
-
-		// Kontakt (předpokládám, že na stránce není)
+		// Ostatní dotazy (kontakt, služby...)
 		if (input.includes("kontakt") || input.includes("email") || input.includes("telefon") || input.includes("adresa")) {
 			return "Omlouvám se, na této ukázkové stránce nemám k dispozici kontaktní údaje. Jsem jen chatbot pro demonstraci nabídek práce.";
 		}
-
-		// Služby (předpokládám, že na stránce nejsou)
 		if (input.includes("služby") || input.includes("pomoc") || input.includes("životopis") || input.includes("cv")) {
 			return "Mojí hlavní funkcí je ukazovat vám přehled pracovních nabídek. Pro specifické služby jako tvorba CV se prosím obraťte přímo na kariérního poradce.";
 		}
-
-		// Poděkování
 		if (input.includes("díky") || input.includes("děkuji")) {
 			return "Rádo se stalo! Přeji hezký den.";
 		}
 
 		// Výchozí odpověď (když nerozumí)
-		return "Omlouvám se, této otázce úplně nerozumím. Zkuste se zeptat na konkrétní pracovní pozici (např. 'automechanik') nebo na nabídky v zahraničí.";
+		return "Omlouvám se, této otázce úplně nerozumím. Zkuste se zeptat na konkrétní pracovní obor (např. 'automechanik', 'kuchař' nebo 'opravář').";
 	};
 
 });
