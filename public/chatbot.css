@@ -2,14 +2,15 @@
 
 :root {
 	--font-modern: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-	--color-primary: #007bff;
-	--color-background: #f0f8ff;
-	--color-header: #e0f0ff;
+	--color-primary: #007bff; /* Modrá pro kolečko */
+	--color-background: #f0f8ff; /* Světle modré pozadí chatu (AliceBlue) */
+	--color-header: #e0f0ff; /* Trochu tmavší modrá pro hlavičku */
 	--color-text: #333;
 	--color-bot-msg: #fff;
 	--color-user-msg: #d1eaff;
 }
 
+/* 1. Kolečko s otazníkem (Trigger) */
 #chat-trigger {
 	position: fixed;
 	bottom: 25px;
@@ -35,6 +36,7 @@
 	transform: scale(1.1);
 }
 
+/* 2. Okno chatbota (Window) */
 #chat-window {
 	position: fixed;
 	bottom: 100px;
@@ -44,19 +46,28 @@
 	background-color: var(--color-background);
 	border-radius: 15px;
 	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-	display: none;
+	display: none; /* Skryté ve výchozím stavu */
 	flex-direction: column;
 	overflow: hidden;
 	font-family: var(--font-modern);
 	z-index: 9999;
 }
 
+/* 3. Hlavička chatu (s titulkem a logem) */
 .chat-header {
 	padding: 20px;
 	background-color: var(--color-header);
 	color: var(--color-text);
 	text-align: center;
-	background-image: linear-gradient(rgba(224, 240, 255, 0.8), rgba(224, 240, 255, 0.8)), url('logoskoly.jpg');
+
+	/* ------------------------------------- */
+	/* --- ZDE BUDE ODKAZ NA LOGO ŠKOLY --- */
+	/* Až budeš mít logo nahrané na GitHubu (třeba jako 'logo.png'), 
+	   odkomentuj řádek níže a vlož správnou cestu. */
+	   
+	/* background-image: linear-gradient(rgba(224, 240, 255, 0.8), rgba(224, 240, 255, 0.8)), url('logo.png'); */
+	/* ------------------------------------- */
+
 	background-size: cover;
 	background-position: center;
 	border-bottom: 1px solid #ddd;
@@ -74,6 +85,7 @@
 	color: #555;
 }
 
+/* 4. Zprávy */
 .chat-messages {
 	flex-grow: 1;
 	padding: 15px;
@@ -103,6 +115,7 @@
 	align-self: flex-end;
 }
 
+/* 5. Vstupní pole */
 .chat-input {
 	display: flex;
 	border-top: 1px solid #ddd;
